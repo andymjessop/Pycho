@@ -23,6 +23,7 @@ class InstanceDescriptor(object):
     '''
     Class to allow for instance-based descriptors. With these, I can add lazyDatum classes to records loaded from a file.
     Found on https://blog.brianbeck.com/post/74086029/instance-descriptors
+    Not sure if this will screw something up....
     '''
     def __getattribute__(self, name):
         value = object.__getattribute__(self, name)
@@ -41,6 +42,9 @@ class InstanceDescriptor(object):
         return object.__setattr__(self, name, value)
     
 class lazyDatum():
+    '''
+    Class used to implement lazy loading of data from HDF5 file.
+    '''
     def __init__(self,filename,path):
         if os.path.isfile(filename) and isinstance(path,str):
             self.file = filename
@@ -49,7 +53,6 @@ class lazyDatum():
             raise TypeError('Invalid input given for datum!')
 
     def __get__(self,instance,cls):
-            print('Pulling data from drive...')
             f = h5.File(self.file)
             data = f[self.path][:]
             return data
@@ -58,15 +61,14 @@ class lazyDatum():
         raise AssertionError('Use addDatum or deleteDatum to manipulate datums!')    
 
 class Record(InstanceDescriptor):
-    Datums = []
-    Units = {}
-    Labels = {}
-    Quantities = {}
-    TimeStamp = None
-    PlotOptions = DefaultPlotOptions
-        
-        
+
     def __init__(self,datums,Labels=None,Units=None,Quantities=None,TimeStamp=None):
+        self.Datums = []
+        self.Units = {}
+        self.Labels = {}
+        self.Quantities = {}
+        self.TimeStamp = None
+        self.PlotOptions = DefaultPlotOptions
         
         self.addDatum(datums)
 
@@ -176,7 +178,6 @@ class Record(InstanceDescriptor):
         #check if equal to length of other datums!
         [setattr(self,datumname,datum_dict[datumname]) for datumname in datum_dict]
         [self.Datums.append(datumname) for datumname in datum_dict]
-        
     
     def assignUnits(self,unit_dict):
         for datumname in unit_dict:
