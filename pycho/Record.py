@@ -174,4 +174,4 @@ if __name__=='__main__':
     filename = '/Users/andymj/Library/Mobile Documents/com~apple~CloudDocs/pycho/echoData/TimeRecord_2.h5'
     q=Record.loadFromFile(filename)
     q.setPlotOptions({'x_datum':'t','y_datum':'data'})       
-    q.plot('test')
+    # q.plot('test')

@@ -22,11 +22,12 @@ class RecordArray():
         self.records = []
         [self.append(entry) for entry in entries]
 
-    def __repr__():
+    def __repr__(self):
         return 'RecordArray'
     
-    def __print__(self):
-        return f'RecordArray containing {len(self.records)} Records'
+    def __str__(self):
+        N = len(self.records)
+        return f'RecordArray containing {N} Records'
         
     def append(self,*entries):
         for entry in entries:
