@@ -12,7 +12,6 @@ from bokeh.models import HoverTool
 import labelTools as lt
 from bokeh.models import Range1d
 
-
 def bokehPlot(echoRecords,outfilename,**OpArgs):
     #generate BokehPlot and my favorite tools
     echoRecords = (echoRecords,[echoRecords])[type(echoRecords) is not list]
@@ -23,7 +22,7 @@ def bokehPlot(echoRecords,outfilename,**OpArgs):
     
     altLabels = []
     
-    if 'colorLabels' in OpArgs.keys():
+    if 'colorLabels' in OpArgs:
         uniqueLabels = lt.findUniqueLabelValues(echoRecords,OpArgs['colorLabels'],return_dict = True)
         palette = setPlotPalette(len(uniqueLabels))
         colorList = setPlotStyles(echoRecords,palette,uniqueLabels)
@@ -33,7 +32,7 @@ def bokehPlot(echoRecords,outfilename,**OpArgs):
         colorList = setPlotStyles(echoRecords,palette)
         
     lineStyles =  ['solid','dashed','dotted','dotdash']
-    if 'lineStyleLabels' in OpArgs.keys():
+    if 'lineStyleLabels' in OpArgs:
         uniqueLabels = lt.findUniqueLabelValues(echoRecords,OpArgs['lineStyleLabels'],return_dict = True)
         lineStyleList = setPlotStyles(echoRecords,lineStyles,uniqueLabels)
         [altLabels.append(labelName) for labelName in forceList(OpArgs['lineStyleLabels'])]
@@ -41,7 +40,7 @@ def bokehPlot(echoRecords,outfilename,**OpArgs):
         lineStyleList = setPlotStyles(echoRecords,lineStyles)
      
      #this part is real messy - I should fix!
-    if 'legendLabels' in OpArgs.keys():
+    if 'legendLabels' in OpArgs:
         labelNames = forceList(OpArgs['legendLabels'])
         labelList=[]
         for record in echoRecords:
@@ -59,7 +58,7 @@ def bokehPlot(echoRecords,outfilename,**OpArgs):
     else:
        labelList = ['Record'+i for i in enumerate(echoRecords)]
         
-    print('Generating Plot...',end='')
+    print('Generating Plot...')
     #Bokeh Plot    
     bp.output_file(outfilename)        
 
@@ -116,7 +115,7 @@ def setPlotPalette(N):
 def setPlotStyles(recordList,styleOptions,style_dicts = []):
     N_styles = len(styleOptions)
     if style_dicts:
-        labelNames = [name for name in style_dicts[0].keys()]
+        labelNames = [name for name in style_dicts[0]]
         styleList = []
         for entry in recordList:
             entry_dict = {Name:entry.Labels[Name] for Name in labelNames}
