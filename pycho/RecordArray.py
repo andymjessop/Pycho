@@ -93,8 +93,10 @@ class RecordArray():
 #a quick sample of what we can do here
 if __name__=='__main__':        
     q = RecordArray.loadFromFolder('/Users/andymj/Library/Mobile Documents/com~apple~CloudDocs/pycho/echoData2')
+    
     q.setPlotOptions({'x_datum':'t','y_datum':'data'})  
     w= lt.findUniqueLabelValues(q.records,['ChannelID','Sequence'],return_dict = True)
+    
     
     q.pull('Sequence','One').plot('test',colorLabels = ['Event','ChannelID'],legendLabels=['Event','ChannelID'])
  
