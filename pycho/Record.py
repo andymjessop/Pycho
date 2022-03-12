@@ -6,11 +6,13 @@ Created on Thu May 20 20:43:26 2021
 @author: andymj
 """
 
-import h5py as h5
-import labelTools as lt
+
+from . import labelTools as lt
 import codecs
 import numpy as np
-import bokehPlotTools as bp
+from . import bokehPlotTools as bp
+import h5py as h5
+from . import matplotlibPlotTools as mplp
 import math
 import datetime as dt
 import os
@@ -53,12 +55,49 @@ class lazyDatum():
             raise TypeError('Invalid input given for datum!')
 
     def __get__(self,instance,cls):
-            f = h5.File(self.file)
-            data = f[self.path][:]
+            with h5.File(self.file) as f:
+                data = f[self.path][:]
             return data
         
     def __set__(self,instance,value):
         raise AssertionError('Use addDatum or deleteDatum to manipulate datums!')    
+         
+# NOT DOING THIS FOR NOW
+
+# class computedDatum():
+#     '''
+#     Class used to implement a needing-to-be-computed Datum
+#     '''
+#     def __init__(self,operator):
+#        pass
+    
+#     def __get__(self,instance,cls):
+#         try:
+#             function = instance.Operator
+#         except:
+#             raise AssertionError('No operator defined for Record!')
+        
+    
+#     def __set__(self,instance,value):
+#         raise AssertionError('Use addDatum or deleteDatum to manipulate datums!')    
+    
+
+class inputDatum():
+    '''
+    Class used to implement datums that are freshly input.
+    '''
+    def __init__(self,value):
+        if isinstance(value,(np.ndarray,int,float)):
+            self.value = value
+        else:
+            raise TypeError('Datum must be a numpy, float, or int!')
+    
+    def __get__(self,instance,cls):
+        return self.value
+    
+    def __set__(self,instance,value):
+        raise AssertionError('Use addDatum or deleteDatum to manipulate datums!')  
+    
 
 class Record(InstanceDescriptor):
 
@@ -70,6 +109,11 @@ class Record(InstanceDescriptor):
         self.TimeStamp = None
         self.PlotOptions = DefaultPlotOptions
         
+        #scrub through datums; if not assigned a datum type, assign one here!
+        for name,data in list(datums.items()):
+            if not isinstance(data,(lazyDatum,inputDatum)):
+                datums[name] = inputDatum(data)
+            
         self.addDatum(datums)
 
         #add units - check that each datum exists!!
@@ -102,7 +146,9 @@ class Record(InstanceDescriptor):
                 self.Quantities[datum] = datum_dict[datum]
             else:
                 raise NameError(f'Datum {datum} does not exist in record!')
-            
+        
+    # @classmethod
+    # def recordFromOperator(cls,operator)
     
     @classmethod
     def loadFromFile(cls,filename):
@@ -112,6 +158,12 @@ class Record(InstanceDescriptor):
             - Load datums lazily?!?
             - Parse extra data in Properties
         '''
+        try: 
+            h5.File(filename,'r')
+        except:
+            print('H5 File Cannot be Loaded! Error in:\n' + filename)
+            return
+        
         with h5.File(filename,'r') as file:
 
             #compile dictionary of inputs:
@@ -210,11 +262,20 @@ class Record(InstanceDescriptor):
         
             
     def plot(self,outfilename,**OpArgs):
-        bp.bokehPlot(self,outfilename)        
+        if plotEngine=='bokeh':
+            bp.bokehPlot(self,outfilename,**OpArgs)   
+        elif plotEngine =='matplotlib':
+            mplp.mplPlot(self,outfilename,**OpArgs)
      
         
 if __name__=='__main__':
-    filename = '/Users/andymj/Library/Mobile Documents/com~apple~CloudDocs/pycho/echoData/TimeRecord_2.h5'
-    q=Record.loadFromFile(filename)
-    q.setPlotOptions({'x_datum':'t','y_datum':'data'})       
+    # filename = '/Users/andymj/Library/Mobile Documents/com~apple~CloudDocs/pycho/echoData/TimeRecord_2.h5'
+    # q=Record.loadFromFile(filename)
+    # q.setPlotOptions({'x_datum':'t','y_datum':'data'})       
     # q.plot('test')
+    
+    t = np.linspace(0,2,num=2001)
+    y = np.sin(2*np.pi*t*10)
+    
+    test = Record({'t':t,'y':y},Units = {'t':'s','y':'G'})
+        

@@ -6,10 +6,10 @@ Created on Thu May 20 20:32:07 2021
 @author: andymj
 """
 
-import labelTools as lt
-from Record import Record 
+from . import labelTools as lt
+from .Record import Record 
 import os
-import bokehPlotTools as bp
+from . import bokehPlotTools as bp
 
 class RecordArray():
     '''
@@ -28,6 +28,15 @@ class RecordArray():
     def __str__(self):
         N = len(self.records)
         return f'RecordArray containing {N} Records'
+    
+    def __len__(self):
+        return len(self.records)
+    
+    def __getitem__(self,index):
+        return self.records[index]
+    
+    def plot(self,outfilename,**OpArgs):
+        bp.bokehPlot(self.records,outfilename,**OpArgs)  
         
     def append(self,*entries):
         for entry in entries:
@@ -69,26 +78,18 @@ class RecordArray():
         
         return output
     
+    def __getattr__(self,func,*args):
+       def method(*args):
+           for record in self.records:
+               try:
+                   getattr(record,func)(*args)
+               except:
+                   raise TypeError(f'Record type does not have function {func}!')
+       return method
+    
     def labelReport(self):
         lt.labelReport(self.records)
-        
-    def __len__(self):
-        return len(self.records)
-    
-    def __getitem__(self,index):
-        return self.records[index]
-    
-    def plot(self,outfilename,**OpArgs):
-        bp.bokehPlot(self.records,outfilename,**OpArgs)  
-        
-    def __getattr__(self,func,*args):
-        def method(*args):
-            for record in self.records:
-                try:
-                    getattr(record,func)(*args)
-                except:
-                    raise TypeError(f'Record type does not have function {func}!')
-        return method
+   
         
 #a quick sample of what we can do here
 if __name__=='__main__':        

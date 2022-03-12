@@ -9,11 +9,13 @@ Created on Sun Mar 21 19:36:11 2021
 import bokeh.palettes as bpalettes
 import bokeh.plotting as bp
 from bokeh.models import HoverTool
-import labelTools as lt
+from . import labelTools as lt
 from bokeh.models import Range1d
 
 def bokehPlot(echoRecords,outfilename,**OpArgs):
     #generate BokehPlot and my favorite tools
+    
+    #build list if input is not a list
     echoRecords = (echoRecords,[echoRecords])[type(echoRecords) is not list]
 
     
@@ -21,15 +23,16 @@ def bokehPlot(echoRecords,outfilename,**OpArgs):
     #set color, linestyle parameters. If no legendLabels, 
     
     altLabels = []
-    
     if 'colorLabels' in OpArgs:
         uniqueLabels = lt.findUniqueLabelValues(echoRecords,OpArgs['colorLabels'],return_dict = True)
-        palette = setPlotPalette(len(uniqueLabels))
-        colorList = setPlotStyles(echoRecords,palette,uniqueLabels)
+        colorList = setPlotStyles(echoRecords,
+                                  setPlotPalette(len(uniqueLabels))
+                                  ,uniqueLabels)
         [altLabels.append(labelName) for labelName in forceList(OpArgs['colorLabels'])]
     else:
-        palette = setPlotPalette(len(echoRecords))
-        colorList = setPlotStyles(echoRecords,palette)
+        
+        colorList = setPlotStyles(echoRecords,
+                                  setPlotPalette(len(echoRecords)))
         
     lineStyles =  ['solid','dashed','dotted','dotdash']
     if 'lineStyleLabels' in OpArgs:
@@ -56,11 +59,11 @@ def bokehPlot(echoRecords,outfilename,**OpArgs):
                 labelText +='|'.join(record.Labels[labelName])+'|'
             labelList.append(labelText[:-1])
     else:
-       labelList = ['Record'+i for i in enumerate(echoRecords)]
+       labelList = ['Record'+str(i) for i,r in enumerate(echoRecords)]
         
     print('Generating Plot...')
     #Bokeh Plot    
-    bp.output_file(outfilename)        
+    bp.output_file(outfilename,mode='inline')        
 
     HOVERTOOL = HoverTool(
         tooltips = [

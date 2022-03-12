@@ -1,0 +1,1 @@
+from .Record import Recordfrom .RecordArray import RecordArraydef load(foldername):    OutputRecords = RecordArray.loadFromFolder(foldername)    return OutputRecords
