@@ -50,7 +50,7 @@ class RecordArray():
                     raise TypeError('Record Arrays must contain the same type of record!')
         
    
-    def pull(self,*labelsAndValues):
+    def pull(self,*labelsAndValues,**dict_LandV):
         pulledRecords = lt.pullRegex(self.records,*labelsAndValues)
         
         output = RecordArray(*pulledRecords)

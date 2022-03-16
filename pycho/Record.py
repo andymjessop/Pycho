@@ -265,7 +265,8 @@ class Record(InstanceDescriptor):
         if plotEngine=='bokeh':
             bp.bokehPlot(self,outfilename,**OpArgs)   
         elif plotEngine =='matplotlib':
-            mplp.mplPlot(self,outfilename,**OpArgs)
+            pass
+            # mplp.mplPlot(self,outfilename,**OpArgs)
      
         
 if __name__=='__main__':

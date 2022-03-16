@@ -7,12 +7,14 @@ Created on Thu Apr 15 22:06:56 2021
 """
 
 import re
+
 try:
     import pandas as pd
 except:
+    print('You''ll need to install Pandas for all of these label functions to work!')
     pass
 
-def ParseNargsToDict(*narg): 
+def ParseNargsToDict(*narg,**darg): 
     '''
     Takes arguments and converts to a properly-formatted label dicionary. 
     All values in dictionary must be as a set!!
@@ -66,6 +68,9 @@ def ParseNargsToDict(*narg):
         else:
             raise ValueError('Not an odd number of name-value pairs!')
             return
+    #add dictionary arguments
+    dictionary ={**dictionary,**darg}
+    
     return dictionary  
    
 def pullRegex(inputRecordList,*narg):
@@ -192,7 +197,10 @@ def makeLabelTable(inputRecords):
     Returns a Pandas table of all labels in a list of records. 
     '''
     titleNames = findAllLabelNames(inputRecords)
-    labelTable = pd.DataFrame(columns = titleNames)
+    try:
+        labelTable = pd.DataFrame(columns = titleNames)
+    except:
+        print('Pands table not working!')
     for record in inputRecords:
         recordLabels = {labelName:'& '.join(record.Labels[labelName]) for labelName in record.Labels.keys()}
         labelTable = labelTable.append(recordLabels,ignore_index=True)
