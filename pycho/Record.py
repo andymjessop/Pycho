@@ -12,7 +12,7 @@ import codecs
 import numpy as np
 from . import bokehPlotTools as bp
 import h5py as h5
-from . import matplotlibPlotTools as mplp
+# from . import matplotlibPlotTools as mplp
 import math
 import datetime as dt
 import os
