@@ -73,13 +73,13 @@ def ParseNargsToDict(*narg,**darg):
     
     return dictionary  
    
-def pullRegex(inputRecordList,*narg):
+def pullRegex(inputRecordList,*narg,**darg):
     '''
     The most generic pull command available.
     '''
     if len(inputRecordList)==0: return None
 
-    search_dict = ParseNargsToDict(*narg)
+    search_dict = ParseNargsToDict(*narg,**darg)
     
     #need option to skip missing label
     #From/To commands like MATLAB?
