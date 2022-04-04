@@ -10,7 +10,7 @@ Created on Thu May 20 20:43:26 2021
 from . import labelTools as lt
 import codecs
 import numpy as np
-from . import bokehPlotTools as bp
+from .plotting import bokehPlot as bp
 import h5py as h5
 # from . import matplotlibPlotTools as mplp
 import math
@@ -262,11 +262,9 @@ class Record(InstanceDescriptor):
         
             
     def plot(self,outfilename,**OpArgs):
-        if plotEngine=='bokeh':
-            bp.bokehPlot(self,outfilename,**OpArgs)   
-        elif plotEngine =='matplotlib':
-            pass
-            # mplp.mplPlot(self,outfilename,**OpArgs)
+        
+        bp.bokehPlot(self,outfilename,**OpArgs)   
+        
      
         
 if __name__=='__main__':

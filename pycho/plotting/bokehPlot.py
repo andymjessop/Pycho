@@ -9,18 +9,77 @@ Created on Sun Mar 21 19:36:11 2021
 import bokeh.palettes as bpalettes
 import bokeh.plotting as bp
 from bokeh.models import HoverTool
-from . import labelTools as lt
+from .. import labelTools as lt
 from bokeh.models import Range1d
 
+# Need to support:
+#     X legendLabels
+#     X styleLabels
+#     X colorLabels
+#     - subplotLabels
+#     - figsize (is size per plot for bokeh)
+#     - subplotLayout
+#     - xLimits
+#     - yLimits
+#     - xLog
+#     - yLog
+#     - titleLabels
+#     - legendLocation
+#     - fontSize
+#     - legendFontSize
+#     - xGrid
+#     - yGrid
+#     - pushToRecords
+
+fig_defaults = {'figsize':[10,6],'dpi':150,
+                'xLog':False,'yLog':False,
+                'fontSize':12,'legendFontSize':12,
+                'colorMap':'tab20',
+                'xGrid':False,'yGrid':False,
+                'style':'seaborn-white'}
+
+
 def bokehPlot(echoRecords,outfilename,**OpArgs):
+    #force all the options to lowercase so you don't have to think about it (what happens if you have 2 with different cases?)
+    OpArgs = {k.lower():v for k,v in OpArgs.items()}
+    
     #generate BokehPlot and my favorite tools
     
     #build list if input is not a list
     echoRecords = (echoRecords,[echoRecords])[type(echoRecords) is not list]
-
     
+    #check filename to be sure it ends in ".html"
     outfilename = (outfilename + '.html',outfilename)[outfilename.endswith('.html')]
     #set color, linestyle parameters. If no legendLabels, 
+    
+    
+    print('Generating Plot...')
+    #Bokeh Plot    
+    bp.output_file(outfilename,mode='inline')        
+
+    HOVERTOOL = HoverTool(
+        tooltips = [
+        ("data","$name"),
+        ("x", "@x"),
+        ("y", "@y"),
+        ],
+        line_policy="prev"
+        )
+    
+    # if 'subplotLabels' in OpArgs:
+    #     uniqueLabels = lt.findUniqueLabelValues(echoRecords,OpArgs['subplotLabels'],return_dict = True)
+    #     Nsubplots =len(uniqueLabels)
+        
+    # else:
+    #     Nsubplots = 1
+    #     axes = 
+    
+    
+    p = bp.figure(plot_width=1000, plot_height=600)
+    
+    
+   
+        
     
     altLabels = []
     if 'colorLabels' in OpArgs:
@@ -61,21 +120,7 @@ def bokehPlot(echoRecords,outfilename,**OpArgs):
     else:
        labelList = ['Record'+str(i) for i,r in enumerate(echoRecords)]
         
-    print('Generating Plot...')
-    #Bokeh Plot    
-    bp.output_file(outfilename,mode='inline')        
-
-    HOVERTOOL = HoverTool(
-        tooltips = [
-        ("data","$name"),
-        ("x", "@x"),
-        ("y", "@y"),
-        ],
-        line_policy="prev"
-        )
-    
-    p = bp.figure(plot_width=1000, plot_height=600)
-    
+   
     x_limits = []
     for record,color,lineStyle,labelText in zip(echoRecords,colorList,lineStyleList,labelList):
         x_data = getattr(record,record.PlotOptions['x_datum'])

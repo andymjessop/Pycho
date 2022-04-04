@@ -14,7 +14,7 @@ except:
     print('You''ll need to install Pandas for all of these label functions to work!')
     pass
 
-def ParseNargsToDict(*narg,**darg): 
+def parseNargsToDict(*narg,**darg): 
     '''
     Takes arguments and converts to a properly-formatted label dicionary. 
     All values in dictionary must be as a set!!
@@ -206,6 +206,13 @@ def makeLabelTable(inputRecords):
         labelTable = labelTable.append(recordLabels,ignore_index=True)
     labelTable = labelTable.fillna('')       
     return labelTable      
+
+def isValidLabel(input):
+    '''Checks if label name is valid:
+        - Only alphanumerics
+        - No spaces
+    '''
+    print('Should check for label validation here!')
 
 def labelReport(inputRecords,labelNames = []):
     '''

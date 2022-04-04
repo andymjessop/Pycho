@@ -9,7 +9,7 @@ Created on Thu May 20 20:32:07 2021
 from . import labelTools as lt
 from .Record import Record 
 import os
-from . import bokehPlotTools as bp
+from .plotting import bokehPlot as bp
 
 class RecordArray():
     '''
