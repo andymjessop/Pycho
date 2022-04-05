@@ -47,16 +47,20 @@ class lazyDatum():
     '''
     Class used to implement lazy loading of data from HDF5 file.
     '''
-    def __init__(self,filename,path):
+    def __init__(self,filename,path,complexDatum=False):
         if os.path.isfile(filename) and isinstance(path,str):
             self.file = filename
             self.path = path      
+            self.complex = complexDatum
         else:
             raise TypeError('Invalid input given for datum!')
 
     def __get__(self,instance,cls):
             with h5.File(self.file) as f:
-                data = f[self.path][:]
+                if self.complex:
+                    data = f[self.path + '_real'][:] + 1j*f[self.path + '_imaginary'][:]
+                else:
+                    data = f[self.path][:]
             return data
         
     def __set__(self,instance,value):
@@ -177,7 +181,14 @@ class Record(InstanceDescriptor):
             
             datumData = {}
             for datumname in DataNames:
-                datumData[datumname]=lazyDatum(filename,'Record/Data/{}'.format(datumname)) 
+                
+                datumLocation = 'Record/Data/{}'.format(datumname)
+                #account for real/imaginary components to data
+                
+                if (datumLocation+'_real' in file):
+                    datumData[datumname]=lazyDatum(filename,datumLocation,complexDatum=True)
+                else:
+                    datumData[datumname]=lazyDatum(filename,datumLocation) 
             
             #create label dictionary:
             AllLabelNames = Labels['Names'][:]
