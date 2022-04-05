@@ -6,7 +6,6 @@ Created on Thu May 20 20:43:26 2021
 @author: andymj
 """
 
-
 from . import labelTools as lt
 import codecs
 import numpy as np
@@ -181,11 +180,20 @@ class Record(InstanceDescriptor):
             
             datumData = {}
             for datumname in DataNames:
-                
-                datumLocation = 'Record/Data/{}'.format(datumname)
-                #account for real/imaginary components to data
-                
-                if (datumLocation+'_real' in file):
+                #how to handle complex datums (which have 2 Datasets ending in '_real' and 'imaginary'):
+                    # 1) Find existence of first complex datum
+                    # 2) Trim _real or _imaginary string off 
+                    # 3) Delete other datum name
+                    # 4) Build a complex LazyDatum
+                if datumname.endswith('_real'):
+                    datumname.replace('_real','')
+                    DataNames.remove(datumname+ '_imaginary')
+                    datumLocation = 'Record/Data/{}'.format(datumname)
+                    datumData[datumname]=lazyDatum(filename,datumLocation,complexDatum=True)
+                elif datumname.endswith('_imaginary'):
+                    datumname.replace('_imaginary','')
+                    DataNames.remove(datumname+ '_real')
+                    datumLocation = 'Record/Data/{}'.format(datumname)
                     datumData[datumname]=lazyDatum(filename,datumLocation,complexDatum=True)
                 else:
                     datumData[datumname]=lazyDatum(filename,datumLocation) 
