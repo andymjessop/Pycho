@@ -177,26 +177,19 @@ class Record(InstanceDescriptor):
             unitData = {datumname:codecs.decode(Data[datumname][0],'UTF-8') for datumname in 
                         list(filter(lambda name:name.endswith('_units'),Data))}
             DataNames = list(filter(lambda name:not name.endswith('_units') and not name.endswith('_dimensions'),Data))
+            #filter complex components, remove the complex part, and define complex datums
+            ComplexDataNames = list(filter(lambda name: name.endswith('_real') or name.endswith('_imaginary'),DataNames))
+            [DataNames.remove(datumname) for datumname in ComplexDataNames]
+            ComplexDataNames = set([datumname.replace('_real','').replace('_imaginary','') for datumname in ComplexDataNames])
             
             datumData = {}
+            for datumname in ComplexDataNames:
+                datumLocation = 'Record/Data/{}'.format(datumname)
+                datumData[datumname]=lazyDatum(filename,datumLocation,complexDatum=True) 
+            
             for datumname in DataNames:
-                #how to handle complex datums (which have 2 Datasets ending in '_real' and 'imaginary'):
-                    # 1) Find existence of first complex datum
-                    # 2) Trim _real or _imaginary string off 
-                    # 3) Delete other datum name
-                    # 4) Build a complex LazyDatum
-                if datumname.endswith('_real'):
-                    datumname.replace('_real','')
-                    DataNames.remove(datumname+ '_imaginary')
-                    datumLocation = 'Record/Data/{}'.format(datumname)
-                    datumData[datumname]=lazyDatum(filename,datumLocation,complexDatum=True)
-                elif datumname.endswith('_imaginary'):
-                    datumname.replace('_imaginary','')
-                    DataNames.remove(datumname+ '_real')
-                    datumLocation = 'Record/Data/{}'.format(datumname)
-                    datumData[datumname]=lazyDatum(filename,datumLocation,complexDatum=True)
-                else:
-                    datumData[datumname]=lazyDatum(filename,datumLocation) 
+                datumLocation = 'Record/Data/{}'.format(datumname)
+                datumData[datumname]=lazyDatum(filename,datumLocation) 
             
             #create label dictionary:
             AllLabelNames = Labels['Names'][:]
@@ -262,7 +255,7 @@ class Record(InstanceDescriptor):
                 
     def label(self,label_dict):
         #parse label entries to dictionary? not yet
-        clean_label_dict = lt.ParseNargsToDict(label_dict)
+        clean_label_dict = lt.parseNargsToDict(label_dict)
         for labelname in clean_label_dict:
             if labelname in self.Labels:
                 self.Labels[labelname] = self.Labels[labelname].union(clean_label_dict[labelname])
