@@ -51,7 +51,7 @@ class RecordArray():
         
    
     def pull(self,*labelsAndValues,**dict_LandV):
-        pulledRecords = lt.pullRegex(self.records,*labelsAndValues)
+        pulledRecords = lt.pullRegex(self.records,*labelsAndValues,**dict_LandV)
         
         output = RecordArray(*pulledRecords)
         
