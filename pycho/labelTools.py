@@ -7,6 +7,7 @@ Created on Thu Apr 15 22:06:56 2021
 """
 
 import re
+from ._miscTools import forceString, forceSet, parseNargsToDict
 
 try:
     import pandas as pd
@@ -14,72 +15,30 @@ except:
     print('You''ll need to install Pandas for all of these label functions to work!')
     pass
 
-def parseNargsToDict(*narg,**darg): 
-    '''
-    Takes arguments and converts to a properly-formatted label dicionary. 
-    All values in dictionary must be as a set!!
-    '''
-    #to-do: format so all values are strings!
-    arguments = narg
-    def forceString(inputSet):
-        if type(inputSet) is not set:
-            raise TypeError('Inputs to forceString must be a set, preferably of integers and strings')
+def sanitizeLabelInput(inputDict):
+    '''Formats a label input dictionary so that:
+    - There are no spaces in the key values
+    - All values are in a set
+    - All inputs are strings'''
+    outputDict = {}
+    for keyvalue in inputDict:
+        if ' ' in keyvalue:
+            raise ValueError('Label names cannot contain spaces!')
         else:
-            output = []
-            for entry in inputSet:
-                if type(entry) is str:
-                    output.append(entry)
-                elif type(entry) is int:
-                    output.append(str(entry))
-                elif type(entry) is float:
-                    output.append('{:.2f}'.format(entry))
-        return set(output)
-    
-    def forceSet(val):
-     if type(val) is set:
-         output = forceString(val)
-     
-     elif type(val) is list:
-         output = forceString(set(val))
-     else:
-         output = forceString({val})
-     return output
+            outputDict[keyvalue] = forceString(forceSet(inputDict[keyvalue]))
+    return outputDict
  
-    
-    if len(arguments)==1 and isinstance(arguments[0],dict): #if someone put a dictionary in the first time!  
-        old_dictionary = arguments[0]
-        dictionary = {}
-        
-        for labelName in old_dictionary.keys():
-            #make itmes into set (if it wasn't already)
-            searchString = old_dictionary[labelName]
-            dictionary[labelName] = forceSet(searchString)
-        
-        #scrub dictionary to assure labels are properly formatter
-        
-    else: #if we just have a bunch of name-value pairs
-        N = len(arguments)
-        if (N % 2) == 0: 
-            dictionary = {}
-            for i in range(0,N,2):
-                key = arguments[i]
-                value = arguments[i+1] 
-                dictionary[key]=forceSet(value)        
-        else:
-            raise ValueError('Not an odd number of name-value pairs!')
-            return
-    #add dictionary arguments
-    dictionary ={**dictionary,**darg}
-    
-    return dictionary  
-   
+def arbLabelInput(*narg,**darg):
+    '''Just a convenience function to bundle parseNargsToDict and sanitizeLabelInput'''
+    return sanitizeLabelInput(parseNargsToDict(*narg,**darg))
+ 
 def pullRegex(inputRecordList,*narg,**darg):
     '''
     The most generic pull command available.
     '''
     if len(inputRecordList)==0: return None
 
-    search_dict = parseNargsToDict(*narg,**darg)
+    search_dict = arbLabelInput(*narg,**darg)
     
     #need option to skip missing label
     #From/To commands like MATLAB?
@@ -109,11 +68,12 @@ def pullRegex(inputRecordList,*narg,**darg):
             
     return output
 
-def purgeRegex(inputRecordList,*narg):
+def purgeRegex(inputRecordList,*narg,**darg):
     '''
     The most generic purge command available!
     '''
-    search_dict = parseNargsToDict(*narg)
+
+    search_dict = arbLabelInput(*narg,**darg)
     output = inputRecordList.copy()
      
     labelnames = list(search_dict.keys())
@@ -231,9 +191,5 @@ def labelReport(inputRecords,labelNames = []):
     print(outtable)
     return outtable
 
-# a few tests if you want to see what the labelTools can do!
-if __name__ =='__main__':
-    dict1 = parseNargsToDict({'Label1':'Test1','Label2':{'Test2','Test3'}})
-    dict2 = parseNargsToDict('Label1','Test1','Label2',['Test2','Test3'])
-    
+
     
