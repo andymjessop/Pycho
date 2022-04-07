@@ -7,60 +7,13 @@ Created on Thu Apr 15 22:06:56 2021
 """
 
 import re
+from _miscTools import forceString, forceSet, parseNargsToDict
 
 try:
     import pandas as pd
 except:
     print('You''ll need to install Pandas for all of these label functions to work!')
     pass
-
-def forceString(inputSet):
-    if type(inputSet) is not set:
-        raise TypeError('Inputs to forceString must be a set, preferably of integers and strings')
-    else:
-        output = []
-        for entry in inputSet:
-            if type(entry) is str:
-                output.append(entry)
-            elif type(entry) is int:
-                output.append(str(entry))
-            elif type(entry) is float:
-                output.append('{:.2f}'.format(entry)) #is this the right format to use for a float??
-    return set(output)
-
-def forceSet(val):
-    if type(val) is set:
-        output = val
-    elif type(val) is list:
-        output = set(val)
-    else:
-        output = {val}
-    return output
-
-def parseNargsToDict(*narg,**darg): 
-    '''
-    Takes arguments given MATLAB-style ('name','value') and converts to a properly-formatted label dictionary {'name':'value'}}.
-    '''
-    #to-do: format so all values are strings!
-    arguments = narg
-    dictionary = {}
-    if len(arguments)==1 and isinstance(arguments[0],dict): #if someone put a dictionary in the first time!  
-        dictionary = arguments[0]
-    else: #if we just have a bunch of name-value pairs
-        N = len(arguments)
-        if (N % 2) == 0: 
-            dictionary = {}
-            for i in range(0,N,2):
-                key = arguments[i]
-                value = arguments[i+1] 
-                dictionary[key]=forceSet(value)        
-        else:
-            raise ValueError('Inputs must be name,value pairs!')
-            return
-    #add dictionary arguments
-    dictionary ={**dictionary,**darg}
-    
-    return dictionary  
 
 def sanitizeLabelInput(inputDict):
     '''Formats a label input dictionary so that:
