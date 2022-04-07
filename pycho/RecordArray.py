@@ -10,7 +10,7 @@ from . import labelTools as lt
 from .Record import Record 
 import os
 from .plotting import bokehPlot as bp
-from _miscTools import progressBar
+from ._miscTools import progressBar
 import numpy as np
 
 class RecordArray():
@@ -77,11 +77,14 @@ class RecordArray():
         
         with progressBar('Loading files') as pb:
             output = cls()
+            next_percent = 0.05
             for i,filename in enumerate(echoFiles):
                 
                 output.append(Record.loadFromFile(filename))
-                if np.floor(i/Nfiles*20)==(i/Nfiles*20): #only update every 5%!
+                #update progress bar, but only pass a print message every 5%
+                if i/Nfiles>next_percent: #only update every 5%!
                     pb.update(i/Nfiles)
+                    next_percent+=0.05
         
         return output
     

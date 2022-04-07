@@ -7,7 +7,7 @@ Created on Thu Apr 15 22:06:56 2021
 """
 
 import re
-from _miscTools import forceString, forceSet, parseNargsToDict
+from ._miscTools import forceString, forceSet, parseNargsToDict
 
 try:
     import pandas as pd

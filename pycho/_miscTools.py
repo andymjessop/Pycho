@@ -13,15 +13,14 @@ class progressBar:
         
     def update(self,percentage):
         print(r'',end = '')
-        n_x = percentage//5
+        n_x = int(percentage*20)
         print('\r'+self.ProgressMessage + ':[' + '{0: <20}'.format('x'*n_x) +']',end='')
-        
-        
+
     def __enter__(self):
         return self
         
     def __exit__(self,type, value, traceback):
-        print('\n')
+       print('\r'+self.ProgressMessage + ':[' + '{0: <20}'.format('x'*20) +']',end='\n')
         
 def forceString(inputSet):
     if type(inputSet) is not set:
