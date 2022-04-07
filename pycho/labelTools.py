@@ -115,7 +115,7 @@ def pullRegex(inputRecordList,*narg,**darg):
             
     return output
 
-def purgeRegex(inputRecordList,*narg):
+def purgeRegex(inputRecordList,*narg,**darg):
     '''
     The most generic purge command available!
     '''
