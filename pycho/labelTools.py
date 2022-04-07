@@ -79,7 +79,7 @@ def pullRegex(inputRecordList,*narg,**darg):
     '''
     if len(inputRecordList)==0: return None
 
-    search_dict = ParseNargsToDict(*narg,**darg)
+    search_dict = parseNargsToDict(*narg,**darg)
     
     #need option to skip missing label
     #From/To commands like MATLAB?
@@ -113,7 +113,7 @@ def purgeRegex(inputRecordList,*narg):
     '''
     The most generic purge command available!
     '''
-    search_dict = ParseNargsToDict(*narg)
+    search_dict = parseNargsToDict(*narg)
     output = inputRecordList.copy()
      
     labelnames = list(search_dict.keys())
@@ -202,7 +202,7 @@ def makeLabelTable(inputRecords):
     except:
         print('Pands table not working!')
     for record in inputRecords:
-        recordLabels = {labelName:'& '.join(record.Labels[labelName]) for labelName in record.Labels.keys()}
+        recordLabels = {labelName:' & '.join(record.Labels[labelName]) for labelName in record.Labels.keys()}
         labelTable = labelTable.append(recordLabels,ignore_index=True)
     labelTable = labelTable.fillna('')       
     return labelTable      
@@ -233,7 +233,7 @@ def labelReport(inputRecords,labelNames = []):
 
 # a few tests if you want to see what the labelTools can do!
 if __name__ =='__main__':
-    dict1 = ParseNargsToDict({'Label1':'Test1','Label2':{'Test2','Test3'}})
-    dict2 = ParseNargsToDict('Label1','Test1','Label2',['Test2','Test3'])
+    dict1 = parseNargsToDict({'Label1':'Test1','Label2':{'Test2','Test3'}})
+    dict2 = parseNargsToDict('Label1','Test1','Label2',['Test2','Test3'])
     
     
