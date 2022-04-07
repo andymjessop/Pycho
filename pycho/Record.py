@@ -253,9 +253,8 @@ class Record(InstanceDescriptor):
             else:
                 raise AttributeError('Record has no datum named ' + datumname) 
                 
-    def label(self,label_dict):
-        #parse label entries to dictionary? not yet
-        clean_label_dict = lt.parseNargsToDict(label_dict)
+    def label(self,*Nargs,**Dargs):
+        clean_label_dict = lt.arbLabelInput(*Nargs,**Dargs)
         for labelname in clean_label_dict:
             if labelname in self.Labels:
                 self.Labels[labelname] = self.Labels[labelname].union(clean_label_dict[labelname])
