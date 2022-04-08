@@ -32,13 +32,12 @@ def arbLabelInput(*narg,**darg):
     '''Just a convenience function to bundle parseNargsToDict and sanitizeLabelInput'''
     return sanitizeLabelInput(parseNargsToDict(*narg,**darg))
  
-def pullRegex(inputRecordList,*narg,**darg):
+def pullRegex(inputRecordList,search_dict):
     '''
     The most generic pull command available.
     '''
     if len(inputRecordList)==0: return None
 
-    search_dict = arbLabelInput(*narg,**darg)
     
     #need option to skip missing label
     #From/To commands like MATLAB?
@@ -68,12 +67,11 @@ def pullRegex(inputRecordList,*narg,**darg):
             
     return output
 
-def purgeRegex(inputRecordList,*narg,**darg):
+def purgeRegex(inputRecordList,search_dict):
     '''
-    The most generic purge command available!
+    The most generic purge command available! 
     '''
 
-    search_dict = arbLabelInput(*narg,**darg)
     output = inputRecordList.copy()
      
     labelnames = list(search_dict.keys())
@@ -157,22 +155,26 @@ def makeLabelTable(inputRecords):
     Returns a Pandas table of all labels in a list of records. 
     '''
     titleNames = findAllLabelNames(inputRecords)
-    try:
-        labelTable = pd.DataFrame(columns = titleNames)
-    except:
-        print('Pands table not working!')
-    for record in inputRecords:
-        recordLabels = {labelName:' & '.join(record.Labels[labelName]) for labelName in record.Labels.keys()}
-        labelTable = labelTable.append(recordLabels,ignore_index=True)
-    labelTable = labelTable.fillna('')       
+    N = len(inputRecords)
+    
+    labelTableDict = {label:list('')*N for label in titleNames}
+    
+    for i,Record in enumerate(inputRecords):
+        for label in titleNames:
+            if label in Record.Labels.keys():
+                labelTableDict[label] = ' & '.join(Record.Labels[label])
+    
+    labelTable = pd.DataFrame(labelTableDict)
+    
+    # try:
+    #     labelTable = pd.DataFrame(columns = titleNames)
+    # except:
+    #     print('Pands table not working!')
+    # for record in inaputRecords:
+    #     recordLabels = {labelName:' & '.join(record.Labels[labelName]) for labelName in record.Labels.keys()}
+    #     labelTable = labelTable.append(recordLabels,ignore_index=True)
+    # labelTable = labelTable.fillna('')       
     return labelTable      
-
-def isValidLabel(input):
-    '''Checks if label name is valid:
-        - Only alphanumerics
-        - No spaces
-    '''
-    print('Should check for label validation here!')
 
 def labelReport(inputRecords,labelNames = []):
     '''
@@ -188,8 +190,11 @@ def labelReport(inputRecords,labelNames = []):
         
     outtable.style.set_properties(**{'text-align': 'left'})
     
-    print(outtable)
+    print(outtable.to_string())
     return outtable
+
+def labelByFile(inputRecords,labelFile):
+    pd.read_csv(labelFile)
 
 
     
