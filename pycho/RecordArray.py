@@ -53,9 +53,44 @@ class RecordArray():
         
    
     def pull(self,*labelsAndValues,**dict_LandV):
-        pulledRecords = lt.pullRegex(self.records,*labelsAndValues,**dict_LandV)
+        search_dict = lt.arbLabelInput(*labelsAndValues,**dict_LandV)
+        
+        pulledRecords = lt.pullRegex(self.records,search_dict)
         
         output = RecordArray(*pulledRecords)
+        
+        return output
+    
+    def pullSub(self,*labelsAndValues,**dict_LandV):
+        input_dict = lt.arbLabelInput(*labelsAndValues,**dict_LandV)
+        search_dict = []
+        for label in input_dict:
+            search_dict[label] = {'.*' + value + '.*' for value in input_dict[label]}
+        
+        pulledRecords = lt.pullRegex(self.records,search_dict)
+        
+        output = RecordArray(*pulledRecords)
+        
+        return output
+    
+    def purge(self,*labelsAndValues,**dict_LandV):
+        search_dict = lt.arbLabelInput(*labelsAndValues,**dict_LandV)
+        
+        remainingRecords = lt.purgeRegex(self.records,search_dict)
+        
+        output = RecordArray(*remainingRecords)
+        
+        return output
+    
+    def purgeSub(self,*labelsAndValues,**dict_LandV):
+        input_dict = lt.arbLabelInput(*labelsAndValues,**dict_LandV)
+        search_dict = []
+        for label in input_dict:
+            search_dict[label] = {'.*' + value + '.*' for value in input_dict[label]}
+        
+        remainingRecords = lt.purgeRegex(self.records,search_dict)
+        
+        output = RecordArray(*remainingRecords)
         
         return output
     
