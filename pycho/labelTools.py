@@ -196,6 +196,29 @@ def labelReport(inputRecords,labelNames = []):
     return outtable
 
 
-def labelByFile(inputRecords,labelFile):
-    pd.read_csv(labelFile)
+def labelByFile(inputRecord,labelFile,labelNamesToMatch,sheet=0):
+    #import
+    labelNamesToMatch = forceSet(labelNamesToMatch)
+    if labelFile.endswith('csv'):    
+        labelData = pd.read_csv(labelFile)
+    elif labelFile.endswith('xls') or labelFile.endswith('xlsx'):  
+        labelData=pd.read_excel(labelFile,sheet=sheet)
+    #find matches to labelNames
+    labelsToMatch = {}
+    for label in labelNamesToMatch:
+        if len(inputRecord.Labels[label])>1:
+            print('Warning: label ' + label + ' has more than 1 value. This may affect labelByFile performance!')
+        labelsToMatch[label]=' & '.join(inputRecord.Labels[label])
+    #find matching columns in labelTable (trim down rowMatch until all labels have been accounted for)
+    rowMatch = labelData.copy()
+    for label in labelsToMatch:
+        rowMatch = rowMatch[rowMatch[label]==labelsToMatch[label]]
+    
+    #apply matches to record (build label Dictionary)
+    labelDict = {}
+    for num,row in rowMatch.iterrows():
+        for labelCol in rowMatch:
+        #build label dictionary to add
+            labelDict[labelCol]={entry for entry in str(rowMatch.loc[num,labelCol]).split(' & ')}
+            inputRecord.label(labelDict)
     

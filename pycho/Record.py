@@ -275,6 +275,9 @@ class Record(InstanceDescriptor):
     def plot(self,outfilename,**OpArgs):
         
         bp.bokehPlot(self,outfilename,**OpArgs)   
+    
+    def labelByFile(self,*nargs):
+        lt.labelByFile(self,*nargs)
         
      
         
