@@ -12,7 +12,7 @@ from ._miscTools import forceString, forceSet, parseNargsToDict
 try:
     import pandas as pd
 except:
-    print('You''ll need to install Pandas for all of these label functions to work!')
+    print('You''ll need to install Pandas for some of these label functions to work!')
     pass
 
 def sanitizeLabelInput(inputDict):
