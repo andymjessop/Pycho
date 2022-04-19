@@ -100,9 +100,12 @@ def purgeRegex(inputRecordList,search_dict):
 def findUniqueLabelValues(inputRecordList,labelNames,return_dict = False):
     '''
     Returns list of all unique label values. Useful for plotting! Will error if
-    requested label(s) are not in all records
+    requested label(s) are not in all records.
+    Resulting output is a little messy:
+        - Array of all unique sets of labels given
+        - Each entry in the array is another array, corresponding to labels in the order given
+        - Each array is the set of entries.
     '''
-    #need way to fine for more than 1 labelName at a time
     
     labelNames = (labelNames,[labelNames])[type(labelNames) is not list]
     #check if label is in all records
@@ -116,6 +119,7 @@ def findUniqueLabelValues(inputRecordList,labelNames,return_dict = False):
         ValueSet = [record.Labels[name] for name in labelNames]
         if ValueSet not in uniqueValues:
             uniqueValues.append(ValueSet)
+            
     if return_dict:
         output_dict=[]
         for entry in uniqueValues:
