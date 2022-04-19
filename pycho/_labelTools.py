@@ -168,7 +168,7 @@ def makeLabelTable(inputRecords):
     for i,Record in enumerate(inputRecords):
         for label in titleNames:
             if label in Record.Labels.keys():
-                labelTableDict[label] = ' & '.join(Record.Labels[label])
+                labelTableDict[label].append(' & '.join(Record.Labels[label]))
     
     labelTable = pd.DataFrame(labelTableDict)
     
