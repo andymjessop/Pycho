@@ -5,6 +5,7 @@ Created on Sun Apr  3 14:32:49 2022
 
 @author: andymj
 """
+import numpy as np
 
 def isLabelInput(inputStringOrList)->bool:
     '''Input should be:
@@ -45,11 +46,12 @@ plotOptionParsing = dict(
     yLimits= is2Numeric,
     xLog= lambda a:type(a)==bool,
     yLog= lambda a:type(a)==bool,
-    figSize = is2Numeric,
+    figureSize = is2Numeric,
+    figureDPI = lambda a:type(a)==int,
     fontSize = lambda a:type(a)==int,
     subplotLayout = lambda x:(x in ['column','row','grid']), #| (is2Numeric(x)),
     legendLabels = isLabelInput,
-    legendLocation = lambda x:(x in ['best','upper right','upper left', 'lower right','lower left'
+    legendLocation = lambda x:(x in ['best','upper right','upper left', 'lower right','lower left',
                                      'right outside', 'top outside','bottom outside']),
     legendFontSize = lambda a:type(a)==int,
     lineWidth = lambda a:type(a)==int
@@ -80,14 +82,19 @@ def sanitizeOptionsDict(inputDictAllCase,validDict)->dict:
     #check if any remaining inputs are left over (invalid input options)        
     if len(inputDict)>0:
         leftoverKeys = list(inputDict.keys())
-        raise ValueError('The following values are not valid option inputs:' + ', '.join(leftoverKeys))
+        raise ValueError('The following values are not valid option inputs: \n' + ', '.join(leftoverKeys))
     
     return sanDict
      
 def setPlotStyles(recordList,styleOptions,style_dicts = []):
-    
-
+    '''
+    Assigns any line-based styles to the record list, producing an array equal in length to the original record list with each option corresponding to the record in the array.
+    If styleOptions are the length of style_dicts, then 1-to-1 correspondence is observed.
+    If styleOptions is shorter than style_dicts, then the options will be recycled after reaching the end
+    If styleOptions is longer than style_dicts, it will be truncated
+    '''
     N_styles = len(styleOptions)
+    N_labels = len(style_dicts)
     if style_dicts:
         labelNames = [name for name in style_dicts[0]]
         styleList = []
@@ -101,7 +108,7 @@ def setPlotStyles(recordList,styleOptions,style_dicts = []):
     return styleList
 
 def forceList(val):
-     if type(val) is list:
+     if isinstance(val, (list, np.ndarray)):
          output = val
      
      elif type(val) is set:
@@ -110,21 +117,8 @@ def forceList(val):
          output = [val]
      return output
  
-def pollRecordsForOptions(recordList):
+# def pollRecordsForOptions(recordList):
     #check if record has PlotOptions!
     
     #check all plotOptions given
     
-        
-
-
-
-    
-
-
-
-#testing out the code:    
-if __name__=='__main__':
-    testDict = {'figSIZE' :[3,10],'linestyleLabels':['borp','sple']}
-    q = sanitizeOptionsDict(testDict,plotOptions)
-    print(q)

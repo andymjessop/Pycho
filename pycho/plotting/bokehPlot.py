@@ -9,7 +9,7 @@ Created on Sun Mar 21 19:36:11 2021
 import bokeh.palettes as bpalettes
 import bokeh.plotting as bp
 from bokeh.models import HoverTool
-from .. import labelTools as lt
+from .. import _labelTools as lt
 from bokeh.models import Range1d
 
 # Need to support:

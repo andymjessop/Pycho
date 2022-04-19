@@ -6,10 +6,10 @@ Created on Thu May 20 20:32:07 2021
 @author: andymj
 """
 
-from . import labelTools as lt
+from . import _labelTools as lt
 from .Record import Record 
 import os
-from .plotting import bokehPlot as bp
+from .plotting import plotter
 from ._miscTools import progressBar
 import numpy as np
 
@@ -37,8 +37,8 @@ class RecordArray():
     def __getitem__(self,index):
         return self.records[index]
     
-    def plot(self,outfilename,**OpArgs):
-        bp.bokehPlot(self.records,outfilename,**OpArgs)  
+    def plot(self,filename = None,**OpArgs):
+        plotter.plot(self.records,filename,**OpArgs)  
         
     def append(self,*entries):
         for entry in entries:
@@ -134,6 +134,7 @@ class RecordArray():
     
     def labelReport(self):
         lt.labelReport(self.records)
+
    
         
 #a quick sample of what we can do here

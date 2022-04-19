@@ -6,12 +6,11 @@ Created on Thu May 20 20:43:26 2021
 @author: andymj
 """
 
-from . import labelTools as lt
+from . import _labelTools as lt
 import codecs
 import numpy as np
-from .plotting import bokehPlot as bp
+from .plotting import plotter
 import h5py as h5
-# from . import matplotlibPlotTools as mplp
 import math
 import datetime as dt
 import os
@@ -274,7 +273,7 @@ class Record(InstanceDescriptor):
             
     def plot(self,outfilename,**OpArgs):
         
-        bp.bokehPlot(self,outfilename,**OpArgs)   
+        plotter.plot(self,**OpArgs)   
     
     def labelByFile(self,*nargs):
         lt.labelByFile(self,*nargs)
