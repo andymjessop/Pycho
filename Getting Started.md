@@ -10,7 +10,7 @@ The primary class in Echo is the Record; an object containing:
 Multiple Records are stored in a RecordArray, which allows for operations to be performed on groups of Records. A Pycho RecordArray, which must be instantiated independently of the Records themselves, functions similar to a normal array but also allows for pulling, pushing, and group operations.
 
 Currently in Pycho, a Record must be instantiated by inputting a dictionary of datums to be used, for example:
-`D = p.Record({‘x’:[1,2,3,4,5]})`
+`D = pycho.Record({‘x’:[1,2,3,4,5]})`
 During instantiation, `Units`, `Labels`, `Quantity`, and `TimeStamp` are optional inputs:
     - `Units` and `Quantity` must be given as a dictionary of strings with keys matching the datums.
     - `TimeStamp` must be a datetime object.
@@ -25,3 +25,5 @@ D=p.Record({‘t’:[0,1,2,3,4],’x’:[1,2,3,4,5],
     Labels={‘Location’:’Stairs’,’StepNames’:{‘A’,’B’,’C’}}
     )
 ```   
+
+See the [Plotting Guide](Plotting.md) for information on how to plot Records.
