@@ -18,11 +18,7 @@ For the time being, all Echo can do is read MATLAB-derived Echo files and plot t
 
 ### To-Do
 
-There's a lot to be done to match feature parity with Echo; while we make no claim to ever match all the functionality. But a few things on the roadmap include:
-
-- Implementing compute-later functionality on methods
-
-- Lazy loading of saved files
+There's a lot to be done to match feature parity with Echo; I make no claim to ever match all the functionality. But a few things on the roadmap include:
 
 - Defining subclasses of Record for common data types (Time histories, PSDs, SRS are top on the list)
 
@@ -30,7 +26,7 @@ There's a lot to be done to match feature parity with Echo; while we make no cla
 
 - Support for unit conversion and cross-unit calculation
 
-- Supporting additional plotting architectures (certainly matplotlib, maybe Altair?)
+- Supporting additional plotting architectures (certainly matplotlib, maybe plotly?)
 
 
 
