@@ -70,15 +70,29 @@ def plot(echoRecords,filename = None,plotEngine = engine,**optionInputs):
     altLabels = ['']*len(echoRecords) #define labels to auto-fill from subplotlabels, lineStyleLabels, and/or colorLabels
     
     #Generate figure and axes with options
+    #get info for axes (if no subplots, nothing to poll):
+    # - X, Y axis names (Quantity plus Units)
+    # - figure title names (subplotlabels or figureLabels)
     if 'subplotLabels' in plotOptions:
         uniqueLabels = lt.findUniqueLabelValues(echoRecords,plotOptions['subplotLabels'],return_dict = True)
         
         f,ax = engine.makeSubplots(uniqueLabels,**plotOptions) 
         axisList = pt.setPlotStyles(echoRecords,ax,uniqueLabels)
+
+        xAxLabels = []
+        yAxLabels = []
+        axisTitles = []
+        for axis,labels in zip(axisList,uniqueLabels):
+            axRecords =  echoRecords.pull(labels)
+            xAxLabels.append(pt.pollRecords(axRecords,'xQuantity'))
+            yAxLabels.append(pt.pollRecords(axRecords,'yQuantity'))
+            axisTitles.append(lt.labelString(labels))
     else:
         f,ax = engine.makeSubplots(1,**plotOptions)
         axisList = pt.setPlotStyles(echoRecords,ax)
     
+
+
     [engine.axisProperties(axis,**plotOptions) for axis in ax]
     
     #assign colors to lines

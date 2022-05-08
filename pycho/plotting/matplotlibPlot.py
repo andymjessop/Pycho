@@ -5,7 +5,6 @@ Created on Sun Sep  5 10:49:20 2021
 
 @author: andymj
 """
-
 #MatPlotLib library for Pycho
 
 plotDefaults = {'figureSize':[10,6],'figureDPI':150,
@@ -55,7 +54,7 @@ def makeSubplots(layoutN,**plotOptions):
     
     return f, ax
 
-def axisProperties(axis,xTitle = '',yTitle='',axisTitle='',**plotOptions):
+def axisProperties(axis,xLabel = '',yLabel='',axisTitle='',**plotOptions):
         #TODO: Need xaxis, yaxis names!!
     # set up each axis:
     # Margins
@@ -63,13 +62,19 @@ def axisProperties(axis,xTitle = '',yTitle='',axisTitle='',**plotOptions):
     # grid
     # Font size
 
-    axis.margins(x=0,y=.1) #set margin to zero - this is not a settable default because I hate having margins
+    axis.margins(x=0,y=.1) # this is not a settable default because I hate having margins on the x-axis
     
     if plotOptions['yLog']:
         axis.set_yscale('log')
     if plotOptions['xLog']:       
         axis.set_xscale('log')
     axis.grid(plotOptions['xyGrid'])
+
+    axis.set_ylabel(yLabel)
+    axis.set_xlabel(xLabel)
+    axis.set_title(axisTitle)
+
+    #TODO: Add X, Y limits
     # axis.set_fontsize(plotOptions['fontSize'])
     #TODO: Add axis names based on layoutN
 
