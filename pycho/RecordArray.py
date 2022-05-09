@@ -64,7 +64,7 @@ class RecordArray():
     
     def pullSub(self,*labelsAndValues,**dict_LandV):
         input_dict = lt.arbLabelInput(*labelsAndValues,**dict_LandV)
-        search_dict = []
+        search_dict = {}
         for label in input_dict:
             search_dict[label] = {'.*' + value + '.*' for value in input_dict[label]}
         

@@ -94,7 +94,7 @@ def plot(echoRecords,filename = None,plotEngine = engine,**optionInputs):
         f,ax = engine.makeSubplots(uniqueLabels,**plotOptions) 
         axisList = pt.setPlotStyles(echoRecords,ax,uniqueLabels)
 
-        for axis,labels in zip(axisList,uniqueLabels):
+        for axis,labels in zip(ax,uniqueLabels):
             axRecords =  echoRecords.pull(labels)
             axisTitle = lt.labelString(labels)
             xLabel,yLabel = pollRecordsForAxisTitles(axRecords)  
