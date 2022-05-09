@@ -116,6 +116,34 @@ def forceList(val):
      else:
          output = [val]
      return output
+
+def pollQuantities(Records): #returns dictionary of 'x','y' with strings
+    xQuantities = set()
+    yQuantities = set()
+    for record in Records:
+        xQuantities.add(record.Quantities[record.PlotOptions['x_datum']])
+        yQuantities.add(record.Quantities[record.PlotOptions['y_datum']])
+    Quantities = {}
+    
+    Quantities['x'] = 'Assorted Quantities' if len(xQuantities)>1 else xQuantities.pop()
+    Quantities['y'] = 'Assorted Quantities' if len(yQuantities)>1 else yQuantities.pop()
+
+    return Quantities
+
+def pollUnits(Records): #returns dictionary of 'x','y' with strings
+    xUnits = set()
+    yUnits = set()
+    for record in Records:
+        xUnits.add(record.Units[record.PlotOptions['x_datum']])
+        yUnits.add(record.Units[record.PlotOptions['x_datum']])
+    Units = {}
+    
+    Units['x'] = 'Assorted Units' if len(xUnits)>1 else xUnits.pop()
+    Units['y'] = 'Assorted Units' if len(yUnits)>1 else yUnits.pop()
+
+    return Units
+
+
  
 # def pollRecordsForOptions(recordList):
     #check if record has PlotOptions!

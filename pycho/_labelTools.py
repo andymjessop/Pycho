@@ -32,7 +32,7 @@ def arbLabelInput(*narg,**darg):
     '''Just a convenience function to bundle parseNargsToDict and sanitizeLabelInput'''
     return sanitizeLabelInput(parseNargsToDict(*narg,**darg))
  
-def pullRegex(inputRecordList,search_dict):
+def pullRegex(inputRecordList,*narg,**darg):
     '''
     The most generic pull command available.
     '''
@@ -68,7 +68,7 @@ def pullRegex(inputRecordList,search_dict):
             
     return output
 
-def purgeRegex(inputRecordList,search_dict):
+def purgeRegex(inputRecordList,*narg,**darg):
     '''
     The most generic purge command available! 
     '''
@@ -156,6 +156,16 @@ def findCommonLabelNames(inputRecordList):
     
     return set(commonLabelNames)
     
+def labelString(*narg,**darg):
+    label_dict = arbLabelInput(*narg,**darg)
+    outString = ''
+    for key in label_dict:
+        outString = ' & '.join(label_dict[key]) + '|'
+    outString = outString[:-1]
+    return outString
+    
+    
+
 def makeLabelTable(inputRecords):
     '''
     Returns a Pandas table of all labels in a list of records. 

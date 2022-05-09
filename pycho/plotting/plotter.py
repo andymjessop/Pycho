@@ -15,6 +15,7 @@ Created on Fri Apr 15 20:55:39 2022
 from . import matplotlibPlot as mplP #eventually - allow Bokeh plots as well! But not yet.
 from .. import _labelTools as lt
 from . import _plotTools as pt
+import copy
 
 engine = mplP
 
@@ -24,6 +25,20 @@ def setPlotEngine(engineOption):
         engine = engineOption
     else:
         raise ValueError('Invalid Plot Engine specified!')
+
+def pollRecordsForAxisTitles(records):
+    axisQuantities = pt.pollQuantities(records)
+    xAxLabels=axisQuantities['x']
+    yAxLabels=axisQuantities['y']
+    axisUnits = pt.pollUnits(records)
+    xAxUnits=axisUnits['x']
+    yAxUnits=axisUnits['y']
+    
+    xLabel=f'{xAxLabels} ({xAxUnits})'
+    yLabel=f'{yAxLabels} ({yAxUnits})'
+    return xLabel, yLabel
+    
+
 
 def plot(echoRecords,filename = None,plotEngine = engine,**optionInputs):
     '''
@@ -52,7 +67,7 @@ def plot(echoRecords,filename = None,plotEngine = engine,**optionInputs):
     
     #start with default options for that particular plot engine. Replace with any sanitized inputs given
     #need to poll Records for figure/axis information (if not given)
-    plotOptions = engine.plotDefaults
+    plotOptions = copy.copy(engine.plotDefaults)
     for option in plotOptions:
         if option in optionInputs:
             plotOptions[option] = sanitizedInputs[option]
@@ -79,21 +94,31 @@ def plot(echoRecords,filename = None,plotEngine = engine,**optionInputs):
         f,ax = engine.makeSubplots(uniqueLabels,**plotOptions) 
         axisList = pt.setPlotStyles(echoRecords,ax,uniqueLabels)
 
-        xAxLabels = []
-        yAxLabels = []
-        axisTitles = []
         for axis,labels in zip(axisList,uniqueLabels):
             axRecords =  echoRecords.pull(labels)
-            xAxLabels.append(pt.pollRecords(axRecords,'xQuantity'))
-            yAxLabels.append(pt.pollRecords(axRecords,'yQuantity'))
-            axisTitles.append(lt.labelString(labels))
+            axisTitle = lt.labelString(labels)
+            xLabel,yLabel = pollRecordsForAxisTitles(axRecords)  
+            
+            engine.axisProperties(axis,
+                xLabel=xLabel,
+                yLabel=yLabel,
+                axisTitle = axisTitle,
+                **plotOptions
+            )
     else:
         f,ax = engine.makeSubplots(1,**plotOptions)
         axisList = pt.setPlotStyles(echoRecords,ax)
+
+        xLabel,yLabel = pollRecordsForAxisTitles(echoRecords)  
+        
+        engine.axisProperties(ax[0],
+            xLabel=xLabel,
+            yLabel=yLabel,
+            axisTitle = '',
+            **plotOptions
+            )
+
     
-
-
-    [engine.axisProperties(axis,**plotOptions) for axis in ax]
     
     #assign colors to lines
     if 'colorLabels' in plotOptions:

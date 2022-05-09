@@ -12,6 +12,7 @@ import os
 from .plotting import plotter
 from ._miscTools import progressBar
 import numpy as np
+import random
 
 class RecordArray():
     '''
@@ -38,7 +39,7 @@ class RecordArray():
         return self.records[index]
     
     def plot(self,filename = None,**OpArgs):
-        plotter.plot(self.records,filename,**OpArgs)  
+        plotter.plot(self,filename,**OpArgs)  
         
     def append(self,*entries):
         for entry in entries:
@@ -93,7 +94,24 @@ class RecordArray():
         output = RecordArray(*remainingRecords)
         
         return output
+
+    def pullSample(self):
+        return random.sample(self.records,1)
     
+    def __iter__(self):
+        self.i = 0
+        return self
+    
+    def __next__(self):
+        if self.i<len(self.records):
+            
+            record = self.records[self.i]
+            self.i+=1
+            return record
+        else:
+            raise StopIteration
+
+
     @classmethod
     def loadFromFolder(cls,pathInput):
         print('Looking for HDF5 files...',end='')
@@ -134,6 +152,8 @@ class RecordArray():
     
     def labelReport(self):
         lt.labelReport(self.records)
+
+    
 
    
         
