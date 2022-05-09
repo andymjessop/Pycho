@@ -48,9 +48,26 @@ class Label:
             return self.keys[key==self.lowerKeys]    
         else:
             return False
+    def printLabel(self,labelNames):
+        #make labelNames a set
+        outString = ''
+        for key in labelNames:
+            labelString = ' & '.join(self.labels[key])
+            outString = labelString + '|'
+        outString = outString[:-1]
         
+        return outString
+        
+         
+    def keys(self):
+        return self.keys
     
-    
+    def __contains__(self,item):
+        #sort out item into proper label set
+        
+        #check that all keys are in item (if case is off)
+        
+        #check values to keys
     
     def __repr__(self):
         return repr(self.labels)
