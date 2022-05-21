@@ -41,13 +41,14 @@ class Label:
         if realKey:
             return self.labels[realKey]
         else:
-            raise ValueError('Label Name "' + key + '" not found in label')
+            raise ValueError('Label Name "' + key + '" not found in labels')
             
     def checkInsensitiveKey(self,key):
         if key.lower() in self.lowerKeys:
             return self.keys[key==self.lowerKeys]    
         else:
             return False
+            
     def printLabel(self,labelNames):
         #make labelNames a set
         outString = ''
@@ -58,7 +59,11 @@ class Label:
         
         return outString
         
-         
+    def iterLabelValues(self,labelName):
+    	realKey = self.checkInsensitiveKey(labelName)
+    	for value in list(self.labels[realKey]):
+    		yield value
+    
     def keys(self):
         return self.keys
     
@@ -66,13 +71,19 @@ class Label:
         #sort out item into proper label set
         
         #check that all keys are in item (if case is off)
+        for key in item.keys():
+        	return
         
         #check values to keys
     
+    def outputDictionary(self):
+    	return self.labels
+    
+    
+    
     def __repr__(self):
         return repr(self.labels)
-    
-    
+
 
 
 f = Label()
