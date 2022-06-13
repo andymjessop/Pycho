@@ -255,13 +255,8 @@ class Record(InstanceDescriptor):
                 
     def label(self,*Nargs,**Dargs):
         #SIMPLY USING LABEL FORMAT
-        clean_label_dict = lt.arbLabelInput(*Nargs,**Dargs)
-        for labelname in clean_label_dict:
-            if labelname in self.Labels:
-                self.Labels[labelname] = self.Labels[labelname].union(clean_label_dict[labelname])
-            else:       
-                self.Labels[labelname] = clean_label_dict[labelname]
-             
+        self.Labels.append(*Nargs,**Dargs)
+        
     def setPlotOptions(self,option_dict):
         for dict_key in option_dict:
             self.PlotOptions[dict_key] = option_dict[dict_key]
