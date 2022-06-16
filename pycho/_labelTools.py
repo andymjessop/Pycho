@@ -73,8 +73,9 @@ class Label:
             raise ValueError('Label Name "' + name + '" not found in labels')
 
     def checkInsensitiveKey(self, name):
-        if name.lower() in self.lowerNames:
-            return self.names[name == self.lowerNames]
+        lower_name = name.lower()
+        if lower_name in self.lowerNames:
+            return self.names[self.lowerNames.index(lower_name)]
         else:
             return False
 

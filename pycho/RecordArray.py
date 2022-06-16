@@ -57,7 +57,10 @@ class RecordArray():
         
         pulledRecords = lt.pullRegex(self.records,search_dict)
         
-        output = RecordArray(*pulledRecords)
+        if len(pullRecords)>0:
+            output = RecordArray(*pulledRecords)
+        else:
+            raise ValueError('No records were found for pull command')
         
         return output
     
@@ -69,7 +72,10 @@ class RecordArray():
         
         pulledRecords = lt.pullRegex(self.records,search_dict)
         
-        output = RecordArray(*pulledRecords)
+        if len(pullRecords)>0:
+            output = RecordArray(*pulledRecords)
+        else:
+            raise ValueError('No records were found for pullSub command')
         
         return output
     
