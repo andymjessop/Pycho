@@ -54,9 +54,11 @@ class Label:
                 self[name] = inputDict[name]
 
     def __setitem__(self, name, value):
-        value = forceString(forceSet(value))
+        '''Adds dictionary-like access to setting labels
+        Forces inputs to strings and adds key value (if needed)'''
         # check if value is set, list, or other
         # set value to string if number
+        value = forceString(forceSet(value))
         realName = self.checkInsensitiveKey(name)
         if realName:
             self.labels[realName].union(value)
@@ -66,6 +68,7 @@ class Label:
             self.lowerNames.append(name.lower())
 
     def __getitem__(self, name):
+        ''' Adds dictionary-like access to labels'''
         realName = self.checkInsensitiveKey(name)
         if realName:
             return self.labels[realName]
