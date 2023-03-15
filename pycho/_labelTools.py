@@ -33,6 +33,119 @@ def arbLabelInput(*narg,**darg):
     '''Just a convenience function to bundle parseNargsToDict and sanitizeLabelInput'''
     return sanitizeLabelInput(parseNargsToDict(*narg,**darg))
  
+# new label interface:
+
+
+#     - print string of all labels given
+#     - equals is if label dict is contained in set
+#     - how to get multiple labels??
+#     - make all labeldicts as label object?
+#
+
+
+class Label:
+    def __init__(self, inputDict=None):
+        self.labels = {}
+        self.names = []
+        self.lowerNames = []
+        if inputDict:
+            # need to parse inputDict for proper format!
+            inputDict = arbLabelInput(inputDict)
+            for name in inputDict.keys():
+                self[name] = inputDict[name]
+
+    def __setitem__(self, name, value):
+        '''Adds dictionary-like access to setting labels
+        Forces inputs to strings and adds key value (if needed)'''
+        # check if value is set, list, or other
+        # set value to string if number
+        value = forceString(forceSet(value))
+        realName = self.checkInsensitiveKey(name)
+        if realName:
+            self.labels[realName].union(value)
+        else:
+            self.labels[name] = value
+            self.names.append(name)
+            self.lowerNames.append(name.lower())
+
+    def __getitem__(self, name):
+        ''' Adds dictionary-like access to labels'''
+        realName = self.checkInsensitiveKey(name)
+        if realName:
+            return self.labels[realName]
+        else:
+            raise ValueError('Label Name "' + name + '" not found in labels')
+
+    def checkInsensitiveKey(self, name):
+        lower_name = name.lower()
+        if lower_name in self.lowerNames:
+            return self.names[self.lowerNames.index(lower_name)]
+        else:
+            return False
+
+    def printLabel(self, labelNames):
+        # make labelNames a set
+        labelNames = forceSet(labelNames)
+        
+        outString = ''
+        for name in labelNames:
+            labelString = ' & '.join(self.labels[name])
+            outString = labelString + '|'
+        outString = outString[:-1]
+
+        return outString
+
+    def iterLabelValues(self, labelName):
+    	realName = self.checkInsensitiveKey(labelName)
+    	for value in list(self.labels[realName]):
+    	    yield value
+
+    def keys(self):
+        return self.names
+
+    def __contains__(self, matchNameandValues):
+        # checks if labels and entries are a subset of labels
+        # entries are Regex entries to allow for pull and purge expansion
+
+        if type(matchNameandValues) is not Label:
+            matchNameandValues = Label(inputDict=matchNameandValues)
+
+        # check that all keys are in item (if case is off)
+        for name in matchNameandValues.lowerNames:
+            if name in self.lowerNames:
+                # check that all entries exist in there:
+                for value in matchNameandValues[name]:
+                    #check against regex pattern
+                    matches = []
+                    for entry in self[name]:
+                        matchCheck = re.fullmatch(value,entry)
+                        if matchCheck:matches.append(matchCheck)
+                    if not matches:
+                        return False
+            
+            else:
+                return False
+
+        return True
+
+    def outputDictionary(self):
+    	return self.labels
+    
+    def removeLabel(self,labelName):
+        if labelName in self.keys:
+            self.labels.pop(labelName)
+            self.keys.pop(labelName)
+            self.lowerKeys.pop(labelName)
+    
+    def __repr__(self):
+        return repr(self.labels)
+    
+    def append(self,*Nargs,**Dargs):
+        #operation for adding more complex labels
+        clean_label_dict = arbLabelInput(*Nargs,**Dargs)
+        for labelname in clean_label_dict:
+            self[labelname] = clean_label_dict[labelname]
+
 def pullRegex(inputRecordList,search_dict):
     '''
     The most generic pull command available. Searches for 
@@ -41,34 +154,16 @@ def pullRegex(inputRecordList,search_dict):
     '''
     if len(inputRecordList)==0: return None
 
-    search_dict = arbLabelInput(*narg,**darg)
-    
     #need option to skip missing label
     #From/To commands like MATLAB?
        
     output = list()
-    
-    labelnames = list(search_dict.keys())
-    
-    while len(labelnames)>1: #recursively run until there's only one label name
-        
-        searchedLabel = labelnames[0]
-        miniDict = {searchedLabel:search_dict[searchedLabel]}
-        inputRecordList = pullRegex(inputRecordList,miniDict)
-        search_dict.pop(searchedLabel)
-        labelnames = list(search_dict.keys())
-    
-    #perform pull on a single label
-    labelName = labelnames[0]
+    search_Labels = Label(inputDict = search_dict)
+
     for record in inputRecordList:
-        allLabelValues = record.Labels[labelName]
-        for stringToMatch in search_dict[labelName]:
-            for labelValue in allLabelValues:
-                stringMatch = re.fullmatch(stringToMatch,labelValue)
-                if type(stringMatch) is re.Match:
-                    if record not in output:
-                        output.append(record)
-            
+        if search_Labels in record.Labels:
+            output.append(record)
+        
     return output
 
 def purgeRegex(inputRecordList,search_dict):
@@ -76,28 +171,12 @@ def purgeRegex(inputRecordList,search_dict):
     The most generic purge command available! 
     '''
 
-    search_dict = arbLabelInput(*narg,**darg)
-    output = inputRecordList.copy()
+    search_Labels = Label(inputDict = search_dict)
+    output = []
      
-    labelnames = list(search_dict.keys())
-    
-    while len(labelnames)>1: #recursively run until there's only one label name
-        
-        searchedLabel = labelnames[0]
-        miniDict = {searchedLabel:search_dict[searchedLabel]}
-        output = purgeRegex(output,miniDict)
-        search_dict.pop(searchedLabel)
-        labelnames = list(search_dict.keys())
-    
-    #perform pull on a single label
-    labelName = labelnames[0]
-    for record in output:
-        allLabelValues = record.Labels[labelName]
-        for stringToMatch in search_dict[labelName]:
-            for labelValue in allLabelValues:
-                stringMatch = re.fullmatch(stringToMatch,labelValue)
-                if type(stringMatch) is re.Match:
-                    output.remove(record)
+    for record in inputRecordList:
+        if search_Labels not in record.Labels:
+            output.append(record)
     
     return output
 
@@ -228,4 +307,3 @@ def labelByFile(inputRecord,labelFile,labelNamesToMatch,sheet=0):
         #build label dictionary to add
             labelDict[labelCol]={entry for entry in str(rowMatch.loc[num,labelCol]).split(' & ')}
             inputRecord.label(labelDict)
-    

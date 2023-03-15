@@ -7,6 +7,7 @@ Created on Thu May 20 20:43:26 2021
 """
 
 from . import _labelTools as lt
+from ._labelTools import Label
 import codecs
 import numpy as np
 from .plotting import plotter
@@ -106,7 +107,7 @@ class Record(InstanceDescriptor):
     def __init__(self,datums,Labels=None,Units=None,Quantities=None,TimeStamp=None):
         self.Datums = []
         self.Units = {}
-        self.Labels = {}
+        self.Labels = Label()
         self.Quantities = {}
         self.TimeStamp = None
         self.PlotOptions = DefaultPlotOptions
@@ -253,13 +254,9 @@ class Record(InstanceDescriptor):
                 raise AttributeError('Record has no datum named ' + datumname) 
                 
     def label(self,*Nargs,**Dargs):
-        clean_label_dict = lt.arbLabelInput(*Nargs,**Dargs)
-        for labelname in clean_label_dict:
-            if labelname in self.Labels:
-                self.Labels[labelname] = self.Labels[labelname].union(clean_label_dict[labelname])
-            else:       
-                self.Labels[labelname] = clean_label_dict[labelname]
-             
+        #SIMPLY USING LABEL FORMAT
+        self.Labels.append(*Nargs,**Dargs)
+        
     def setPlotOptions(self,option_dict):
         for dict_key in option_dict:
             self.PlotOptions[dict_key] = option_dict[dict_key]
