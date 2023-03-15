@@ -9,6 +9,7 @@ Created on Thu Apr 15 22:06:56 2021
 import re
 from ._miscTools import forceString, forceSet, parseNargsToDict
 
+#need pandas installed for labelTable - this checks and throws an eror
 try:
     import pandas as pd
 except:
@@ -22,7 +23,7 @@ def sanitizeLabelInput(inputDict):
     - All inputs are strings'''
     outputDict = {}
     for keyvalue in inputDict:
-        if ' ' in keyvalue:
+        if ' ' in keyvalue: #TODO:add other forbidden characters
             raise ValueError('Label names cannot contain spaces!')
         else:
             outputDict[keyvalue] = forceString(forceSet(inputDict[keyvalue]))
@@ -34,7 +35,9 @@ def arbLabelInput(*narg,**darg):
  
 def pullRegex(inputRecordList,search_dict):
     '''
-    The most generic pull command available.
+    The most generic pull command available. Searches for 
+    regex string in given label list
+    Note that only labels with all search_dict matches will be pulled
     '''
     if len(inputRecordList)==0: return None
 
